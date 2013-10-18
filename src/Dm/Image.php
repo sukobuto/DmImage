@@ -37,6 +37,10 @@
  */
 class Dm_Image
 {
+
+	const FLIP_HORIZONTAL = 1;
+	const FLIP_VERTICAL = 2;
+	const FLIP_BOTH = 3;
 	
 	/**
 	 * @var Dm_Image_Graphic_Shape
@@ -290,6 +294,47 @@ class Dm_Image
 		foreach ($filters as $filter) {
 			$this->applyFilter($filter);
 		}
+		return $this;
+	}
+
+	/**
+	 * @param float $angle
+	 * @return \Dm_Image $this
+	 */
+	public function rotate($angle)
+	{
+		$rotatedResource = imagerotate($this->_imageResource, $angle, 0);
+		$this->_imageResource = $rotatedResource;
+		$this->_width = imagesx($rotatedResource);
+		$this->_height = imagesy($rotatedResource);
+
+		return $this;
+	}
+
+	/**
+	 * @param $type
+	 * @return Dm_Image $this
+	 */
+	public function flip($type)
+	{
+		$src = $this->_imageResource;
+		$w = $this->_width;
+		$h = $this->_height;
+		$dst = imagecreatetruecolor($w, $h);
+
+		for ($x = 0; $x < $w; $x++) {
+			for ($y = 0; $y < $h; $y++) {
+				if ($type == self::FLIP_HORIZONTAL)
+					imagecopy($dst, $src, ($w - $x - 1), $y, $x, $y, 1, 1);
+				else if ($type == self::FLIP_VERTICAL)
+					imagecopy($dst, $src, $x, ($h - $y - 1), $x, $y, 1, 1);
+				else if ($type == self::FLIP_BOTH)
+					imagecopy($dst, $src, ($w - $x - 1), ($h - $y - 1), $x, $y, 1, 1);
+			}
+		}
+		imagedestroy($src);
+		$this->_imageResource = $dst;
+
 		return $this;
 	}
 	
