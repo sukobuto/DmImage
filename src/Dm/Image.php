@@ -174,9 +174,10 @@ class Dm_Image
 	 * @param string filetype 'png' 'jpg' 'jpeg' 'gif'
 	 * @return bool
 	 */
-	public function saveTo($path , $type='png', $quality=null)
+	public function saveTo($path , $type=null, $quality=null)
 	{
 		if (!$path) return false;
+		if (!$type) $type = strtolower(pathinfo($path, PATHINFO_EXTENSION));
 		return $this->outputTo($path, $type, $quality);
 	}
 	
